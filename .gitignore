@@ -1,0 +1,31 @@
+# Credentials and tokens
+creds/
+oauth_secret.json
+token.json
+
+# Data files (optional: track if small/important)
+Data/
+
+# Logs
+loggs/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+
+# Virtual environments
+.env/
+.venv/
+env/
+
+# IDE/editor
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# OS files
+.DS_Store
+Thumbs.db
