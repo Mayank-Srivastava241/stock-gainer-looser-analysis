@@ -1,7 +1,7 @@
 from playwright.sync_api import sync_playwright
 from datetime import date
-    GAINER_URL="https://www.nseindia.com/api/live-analysis-variations?index=gainers&type=allSec&csv=true"
-
+GAINER_URL="https://www.nseindia.com/api/live-analysis-variations?index=gainers&type=allSec&csv=true"
+def fetch_nse_gainer_data():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
         context = browser.new_context(
