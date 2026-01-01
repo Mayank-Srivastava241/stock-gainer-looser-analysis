@@ -12,7 +12,7 @@ def fetch_nse_gainer_data():
     }
     response = requests.get(gurl, headers=headers)
     gainer_data = response.text
-    return str(gainer_data)
+    return (gainer_data)
 
 def fetch_nse_looser_data():
     lurl="https://www.nseindia.com/api/live-analysis-variations?index=loosers&type=allSec&csv=true"
@@ -26,4 +26,4 @@ def fetch_nse_looser_data():
     }
     response = requests.get(lurl, headers=headers)
     looser_data = response.text
-    return str(looser_data)
+    return (looser_data)
