@@ -1,4 +1,4 @@
-playwright
+requests
 pandas
 numpy
 google-auth
