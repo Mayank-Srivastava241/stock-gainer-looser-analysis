@@ -32,8 +32,8 @@ jobs:
 
       - name: Create credential files from secrets
         env:
-          OAUTH_SECRET: ${{ secrets.OAUTH_SECRET }}
-          TOKEN_JSON: ${{ secrets.TOKEN_JSON }}
+          API_KEY: ${{ secrets.API_KEY }}
+          TOKEN: ${{ secrets.TOKEN }}
         run: |
           # If secrets are missing this step will warn. For upload to Drive, you must add these secrets in the repository settings.
           if [ -z "$OAUTH_SECRET" ] || [ -z "$TOKEN_JSON" ]; then
