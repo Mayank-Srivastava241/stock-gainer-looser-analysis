@@ -5,7 +5,7 @@ from .upload_cloud import upload_to_cloud
 from datetime import date
 gdata = fetch_nse_gainer_data()
 ldata = fetch_nse_looser_data()
-logging.basicConfig(filename=f"loggs/{date.today().strftime("%d-%m-%Y")}_log.log",filemode='a',level=logging.INFO,format='%(asctime)s-%(levelname)s-%(message)s')
+logging.basicConfig(filename=f"loggs/{date.today().strftime('%d-%m-%Y')}_log.log",filemode='a',level=logging.INFO,format='%(asctime)s-%(levelname)s-%(message)s')
 def process_data(data):
     logging.info(f"Processing raw data: {data}")
     data = data.split("\n")
