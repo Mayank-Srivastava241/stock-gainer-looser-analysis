@@ -1,10 +1,8 @@
 import csv
-import logging
 from datetime import date
 import pandas as pd
 import numpy as np
 from .upload_cloud import upload_to_cloud
-logging.basicConfig(filename=f"loggs/{date.today().strftime("%d-%m-%Y")}_log.log",filemode='a',level=logging.INFO,format='%(asctime)s-%(levelname)s-%(message)s')
 
 def file_copy():
     DATA = []
@@ -23,7 +21,6 @@ def file_copy():
     with open("Data/ldata_prev.csv","w",newline='') as f:
         writer = csv.writer(f)
         writer.writerows(DATA)
-    logging.info("Previous File Updated Successfully.")
 
 def comparison():
     gdata_df = pd.DataFrame(pd.read_csv("Data/gdata.csv"))
@@ -58,7 +55,6 @@ def comparison():
     new_df.to_csv("Data/comparison_result.csv", index=False)
     logging.info(f"Comparison Result CSV created successfully.\nData:{new_df}")
     upload_to_cloud(name="result",file_id="11QyZQtJetb2XXE4zk9orde-3dAw0qJea")
-    logging.info("Comparison Result File uploaded successfully.")
     print("Comparison Result File uploaded successfully.")
     file_copy()
 

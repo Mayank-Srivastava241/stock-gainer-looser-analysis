@@ -6,9 +6,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from datetime import date
-import logging
-logging.basicConfig(filename=f"loggs/{date.today().strftime("%d-%m-%Y")}_log.log",filemode="a",level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
- 
+
 def upload_to_cloud(name,file_id):
     SCOPES = ['https://www.googleapis.com/auth/drive']
     CLIENT_SECRET = os.getenv("API_KEY")
@@ -63,7 +61,6 @@ def upload_to_cloud(name,file_id):
         media_body=media,
         fields='id'
     ).execute()
-    logging.info(f" {name} File uploaded successfully.")
     print(f" {name} File uploaded successfully.")
 
 
