@@ -1,65 +1,64 @@
 name: Run project
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
-  pull_request:
 
 jobs:
   run:
     runs-on: ubuntu-latest
-    env:
-      API_KEY: creds/oauth_secret.json
-      TOKEN: creds/token.json
 
     steps:
+      # 1. Checkout repository
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2. Setup Python
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
+      # 3. Install Python dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirement.txt
 
+      # 4. Prepare required directories
       - name: Prepare directories
         run: |
           mkdir -p creds loggs Data
 
+      # 5. Create credential files from GitHub secrets
       - name: Create credential files from secrets
         env:
           API_KEY: ${{ secrets.API_KEY }}
           TOKEN: ${{ secrets.TOKEN }}
         run: |
-          # If secrets are missing this step will warn. For upload to Drive, you must add these secrets in the repository settings.
-          if [ -z "$OAUTH_SECRET" ] || [ -z "$TOKEN_JSON" ]; then
-            echo "WARNING: OAUTH_SECRET or TOKEN_JSON secrets are missing. Upload steps requiring Drive credentials will fail.";
+          if [ -z "$API_KEY" ] || [ -z "$TOKEN" ]; then
+            echo "ERROR: API_KEY or TOKEN secret is missing"
+            exit 1
           fi
-          printf '%s' "$OAUTH_SECRET" > creds/oauth_secret.json || true
-          printf '%s' "$TOKEN_JSON" > creds/token.json || true
 
-      - name: Optional: install Playwright browsers
-        if: success()
+          printf '%s' "$API_KEY" > creds/oauth_secret.json
+          printf '%s' "$TOKEN" > creds/token.json
+
+      # 6. Install Playwright browser (Chromium)
+      - name: Install Playwright browser
         run: |
-          # Install browsers needed by Playwright if your code uses it. Comment out if not required.
-          npx playwright install --with-deps || true
+          npx playwright install chromium
 
-      - name: Run linter
-        run: |
-          pip install flake8
-          flake8 . || true
-
+      # 7. Run the project
       - name: Run project
         env:
-          API_KEY: creds/oauth_secret.json
-          TOKEN: creds/token.json
+          API_KEY_PATH: creds/oauth_secret.json
+          TOKEN_PATH: creds/token.json
         run: |
           python main.py
 
+      # 8. Upload Data and logs (even if job fails)
       - name: Upload artifacts (Data and logs)
         if: always()
         uses: actions/upload-artifact@v4
@@ -68,8 +67,3 @@ jobs:
           path: |
             Data/
             loggs/
-
-# NOTES:
-# - Add two repository secrets: OAUTH_SECRET and TOKEN_JSON (the full JSON contents of your oauth_secret.json and token.json respectively).
-# - Ensure the token.json secret corresponds to an already-authorized credentials file; otherwise the oauth flow will attempt to open a local server, which will fail in CI.
-# - Adjust Python version or additional setup steps as needed.
