@@ -11,8 +11,8 @@ logging.basicConfig(filename=f"loggs/{date.today().strftime("%d-%m-%Y")}_log.log
  
 def upload_to_cloud(name,file_id):
     SCOPES = ['https://www.googleapis.com/auth/drive']
-    CLIENT_SECRET = 'creds/oauth_secret.json'
-    TOKEN_FILE = 'creds/token.json'
+    CLIENT_SECRET = os.getenv("API_KEY")
+    TOKEN_FILE = os.getenv("TOKEN")
     DATE = date.today().strftime("%d-%m-%Y")
     creds = None
     if os.path.exists(TOKEN_FILE):
