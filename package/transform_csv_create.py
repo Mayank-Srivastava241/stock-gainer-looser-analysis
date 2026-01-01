@@ -5,7 +5,6 @@ from datetime import date
 gdata = fetch_nse_gainer_data()
 ldata = fetch_nse_looser_data()
 def process_data(data):
-    logging.info(f"Processing raw data: {data}")
     data = data.split("\n")
     start = data[0].find("'") +1
     end = data[0].find('"')
