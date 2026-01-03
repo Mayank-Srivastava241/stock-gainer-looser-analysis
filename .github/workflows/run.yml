@@ -1,27 +1,51 @@
-name: Manual Stock Pipeline
+name: Manual Stock Pipeline Run
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  run:
+  run-pipeline:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout repo with full history (IMPORTANT for prev files)
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      # 2. Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # 3. Install dependencies
       - name: Install dependencies
         run: |
           pip install -r requirement.txt
 
-      - name: Run pipeline
-        env:
-          GDRIVE_SERVICE_ACCOUNT: ${{ secrets.GDRIVE_SERVICE_ACCOUNT }}
+      # 4. Run your pipeline
+      - name: Run main pipeline
         run: |
           python main.py
+
+      # 5. Commit only persistent outputs
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add \
+            Data/gdata.csv\
+            Data/ldata.csv\
+            Data/gdata_prev.csv \
+            Data/ldata_prev.csv \
+            Data/comparison_result.csv 
+
+          git commit -m "Manual run: update comparison data" || echo "No changes to commit"
+
+          git push
