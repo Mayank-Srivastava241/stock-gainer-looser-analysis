@@ -2,7 +2,7 @@ import csv
 from datetime import date
 import pandas as pd
 import numpy as np
-from .upload_cloud import upload_to_cloud
+
 
 def file_copy():
     DATA = []
@@ -53,8 +53,7 @@ def comparison():
     new_df = pd.DataFrame(cols).fillna('')
 
     new_df.to_csv("Data/comparison_result.csv", index=False)
-    logging.info(f"Comparison Result CSV created successfully.\nData:{new_df}")
-    print("Comparison Result File uploaded successfully.")
+    
     file_copy()
 
 
