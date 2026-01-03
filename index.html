@@ -22,53 +22,63 @@
   .subtitle {
     font-size: 0.8rem;
     color: #9ca3af;
-    margin-bottom: 16px;
-  }
-
-  .section {
-    background: #111827;
-    border: 1px solid #1f2937;
-    border-radius: 14px;
-    padding: 14px;
     margin-bottom: 14px;
   }
 
-  .section h2 {
-    font-size: 1rem;
-    margin: 0 0 10px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .table-wrapper {
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 14px;
+    overflow-x: auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
   }
 
-  .count {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 520px; /* critical for mobile */
+  }
+
+  thead {
+    background: #020617;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  th, td {
+    padding: 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid #1f2937;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  th {
     font-size: 0.75rem;
+    text-transform: uppercase;
     color: #9ca3af;
   }
 
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  tbody tr:last-child td {
+    border-bottom: none;
   }
 
-  li {
-    padding: 10px 12px;
-    background: #020617;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    font-size: 0.9rem;
+  .pos {
+    color: #22c55e;
+    font-weight: 600;
   }
 
-  li:last-child {
-    margin-bottom: 0;
+  .neg {
+    color: #ef4444;
+    font-weight: 600;
   }
 
   footer {
     text-align: center;
     font-size: 0.7rem;
     color: #9ca3af;
-    margin-top: 20px;
+    margin-top: 18px;
   }
 </style>
 </head>
@@ -76,45 +86,53 @@
 <body>
 
 <h1>📊 Daily Stock Comparison</h1>
-<div class="subtitle">Auto-updated • Vertical list view</div>
+<div class="subtitle">Auto-updated • Scroll sideways if needed</div>
 
-<div id="content">Loading…</div>
+<div class="table-wrapper">
+  <table id="table">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+</div>
 
 <footer>Generated automatically via GitHub Actions</footer>
 
 <script>
 async function loadCSV() {
-  const res = await fetch("comparison_result.csv?ts=" + Date.now());
+  const res = await fetch("Data/comparison_result.csv?ts=" + Date.now());
   const text = await res.text();
 
   const rows = text.trim().split("\n").map(r => r.split(","));
   const headers = rows[0];
   const data = rows.slice(1);
 
-  let sections = {};
-  headers.forEach(h => sections[h] = []);
+  const thead = document.querySelector("#table thead");
+  const tbody = document.querySelector("#table tbody");
+
+  thead.innerHTML = `
+    <tr>
+      ${headers.map(h => `<th>${h}</th>`).join("")}
+    </tr>
+  `;
+
+  tbody.innerHTML = "";
 
   data.forEach(row => {
-    row.forEach((cell, i) => {
-      const value = cell.trim();
-      if (value) sections[headers[i]].push(value);
+    let tr = "<tr>";
+    row.forEach(cell => {
+      const val = cell.trim();
+      let cls = "";
+
+      if (!isNaN(val)) {
+        if (parseFloat(val) > 0) cls = "pos";
+        if (parseFloat(val) < 0) cls = "neg";
+      }
+
+      tr += `<td class="${cls}">${val || "-"}</td>`;
     });
+    tr += "</tr>";
+    tbody.innerHTML += tr;
   });
-
-  let html = "";
-
-  for (const key in sections) {
-    html += `
-      <div class="section">
-        <h2>${key} <span class="count">${sections[key].length}</span></h2>
-        <ul>
-          ${sections[key].map(v => `<li>${v}</li>`).join("")}
-        </ul>
-      </div>
-    `;
-  }
-
-  document.getElementById("content").innerHTML = html;
 }
 
 loadCSV();
