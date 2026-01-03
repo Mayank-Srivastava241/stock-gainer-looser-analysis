@@ -1,154 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stock Comparison</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Stock Comparison</title>
 
-  <style>
-    :root {
-      --bg: #0b1220;
-      --card: #111827;
-      --border: #1f2937;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --green: #22c55e;
-      --red: #ef4444;
-    }
+<style>
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #0b1220;
+    color: #e5e7eb;
+    padding: 14px;
+  }
 
-    * { box-sizing: border-box; }
+  h1 {
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+  }
 
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 14px;
-    }
+  .subtitle {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-bottom: 14px;
+  }
 
-    header {
-      margin-bottom: 16px;
-    }
+  .table-wrapper {
+    background: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 14px;
+    overflow-x: auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  }
 
-    h1 {
-      font-size: 1.3rem;
-      margin: 0;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 520px; /* critical for mobile */
+  }
 
-    .subtitle {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
+  thead {
+    background: #020617;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
 
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-      margin-bottom: 12px;
-    }
+  th, td {
+    padding: 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid #1f2937;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
 
-    .row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      font-size: 0.9rem;
-    }
+  th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #9ca3af;
+  }
 
-    .row:last-child {
-      margin-bottom: 0;
-    }
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
 
-    .label {
-      color: var(--muted);
-      font-size: 0.75rem;
-    }
+  .pos {
+    color: #22c55e;
+    font-weight: 600;
+  }
 
-    .value {
-      font-weight: 600;
-    }
+  .neg {
+    color: #ef4444;
+    font-weight: 600;
+  }
 
-    .pos { color: var(--green); }
-    .neg { color: var(--red); }
-
-    .loading {
-      text-align: center;
-      color: var(--muted);
-      margin-top: 40px;
-    }
-
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.7rem;
-      margin-top: 20px;
-    }
-
-    @media (min-width: 768px) {
-      body {
-        max-width: 900px;
-        margin: auto;
-      }
-    }
-  </style>
+  footer {
+    text-align: center;
+    font-size: 0.7rem;
+    color: #9ca3af;
+    margin-top: 18px;
+  }
+</style>
 </head>
 
 <body>
 
-  <header>
-    <h1>📊 Daily Stock Comparison</h1>
-    <div class="subtitle">Auto-updated • Mobile friendly</div>
-  </header>
+<h1>📊 Daily Stock Comparison</h1>
+<div class="subtitle">Auto-updated • Scroll sideways if needed</div>
 
-  <div id="content" class="loading">
-    Loading data…
-  </div>
+<div class="table-wrapper">
+  <table id="table">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+</div>
 
-  <footer>
-    Generated automatically via GitHub Actions
-  </footer>
+<footer>Generated automatically via GitHub Actions</footer>
 
-  <script>
-    async function loadData() {
-      const res = await fetch("Data/comparison_result.csv");
-      const text = await res.text();
+<script>
+async function loadCSV() {
+  const res = await fetch("Data/comparison_result.csv?ts=" + Date.now());
+  const text = await res.text();
 
-      const rows = text.trim().split("\n").map(r => r.split(","));
-      const headers = rows[0];
-      const data = rows.slice(1);
+  const rows = text.trim().split("\n").map(r => r.split(","));
+  const headers = rows[0];
+  const data = rows.slice(1);
 
-      let html = "";
+  const thead = document.querySelector("#table thead");
+  const tbody = document.querySelector("#table tbody");
 
-      data.forEach(row => {
-        html += `<div class="card">`;
+  thead.innerHTML = `
+    <tr>
+      ${headers.map(h => `<th>${h}</th>`).join("")}
+    </tr>
+  `;
 
-        row.forEach((cell, i) => {
-          const val = cell.trim();
-          let cls = "value";
+  tbody.innerHTML = "";
 
-          if (!isNaN(val)) {
-            if (parseFloat(val) > 0) cls += " pos";
-            if (parseFloat(val) < 0) cls += " neg";
-          }
+  data.forEach(row => {
+    let tr = "<tr>";
+    row.forEach(cell => {
+      const val = cell.trim();
+      let cls = "";
 
-          html += `
-            <div class="row">
-              <div class="label">${headers[i]}</div>
-              <div class="${cls}">${val}</div>
-            </div>
-          `;
-        });
+      if (!isNaN(val)) {
+        if (parseFloat(val) > 0) cls = "pos";
+        if (parseFloat(val) < 0) cls = "neg";
+      }
 
-        html += `</div>`;
-      });
+      tr += `<td class="${cls}">${val || "-"}</td>`;
+    });
+    tr += "</tr>";
+    tbody.innerHTML += tr;
+  });
+}
 
-      document.getElementById("content").innerHTML = html;
-    }
-
-    loadData();
-  </script>
+loadCSV();
+</script>
 
 </body>
 </html>
