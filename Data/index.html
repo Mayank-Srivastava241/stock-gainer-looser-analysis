@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Stock Comparison</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --green: #22c55e;
+      --red: #ef4444;
+      --border: #1f2933;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(180deg, #020617, #0f172a);
+      color: var(--text);
+      padding: 16px;
+    }
+
+    header {
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      margin: 0 0 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 8px 6px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pos {
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .neg {
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    .loading {
+      text-align: center;
+      color: var(--muted);
+      padding: 30px 0;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.75rem;
+      margin-top: 20px;
+    }
+
+    /* Desktop polish (optional) */
+    @media (min-width: 768px) {
+      body {
+        max-width: 900px;
+        margin: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>📊 Daily Stock Comparison</h1>
+    <div class="subtitle">Auto-updated • Mobile-friendly</div>
+  </header>
+
+  <div id="content" class="loading">
+    Loading data…
+  </div>
+
+  <footer>
+    Generated automatically by GitHub Actions
+  </footer>
+
+  <script>
+    async function loadCSV() {
+      const response = await fetch("comparison_result.csv");
+      const text = await response.text();
+
+      const rows = text.trim().split("\n").map(r => r.split(","));
+      const headers = rows[0];
+      const data = rows.slice(1);
+
+      let html = `
+        <div class="card">
+          <h2>Comparison Result</h2>
+          <table>
+            <thead>
+              <tr>
+                ${headers.map(h => `<th>${h}</th>`).join("")}
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      data.forEach(row => {
+        html += "<tr>";
+        row.forEach(cell => {
+          const value = cell.trim();
+          let cls = "";
+
+          if (!isNaN(value)) {
+            if (parseFloat(value) > 0) cls = "pos";
+            if (parseFloat(value) < 0) cls = "neg";
+          }
+
+          html += `<td class="${cls}">${value}</td>`;
+        });
+        html += "</tr>";
+      });
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      document.getElementById("content").innerHTML = html;
+    }
+
+    loadCSV();
+  </script>
+
+</body>
+</html>
