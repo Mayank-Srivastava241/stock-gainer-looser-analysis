@@ -54,7 +54,6 @@ def comparison():
 
     new_df.to_csv("Data/comparison_result.csv", index=False)
     logging.info(f"Comparison Result CSV created successfully.\nData:{new_df}")
-    upload_to_cloud(name="result",file_id="11QyZQtJetb2XXE4zk9orde-3dAw0qJea")
     print("Comparison Result File uploaded successfully.")
     file_copy()
 
