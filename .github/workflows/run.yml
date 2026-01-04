@@ -2,11 +2,8 @@ name: Manual Stock Pipeline Run
 
 on:
   workflow_dispatch:
-  on:
-  workflow_dispatch:
   schedule:
-    - cron: "*/5 * * * *"
-
+    - cron: "30 11 * * 1-5"
 
 permissions:
   contents: write
