@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "30 11 * * 1-5"
-
 permissions:
   contents: write
 
@@ -13,29 +12,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repo with full history (IMPORTANT for prev files)
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2. Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      # 3. Install dependencies
       - name: Install dependencies
         run: |
           pip install -r requirement.txt
 
-      # 4. Run your pipeline
       - name: Run main pipeline
         run: |
           python main.py
 
-      # 5. Commit only persistent outputs
       - name: Commit updated data
         run: |
           git config user.name "github-actions"
