@@ -32,28 +32,28 @@ def comparison():
     ldf = ldata_df['Symbol']
     gprevdf = gdata_prev_df['Symbol']
     lprevdf = ldata_prev_df['Symbol']
-
-    common_gg = set(gdf).intersection(set(gprevdf))
-    common_ll = set(ldf).intersection(set(lprevdf))
-    common_gl = set(gdf).intersection(set(lprevdf))
-    common_lg = set(ldf).intersection(set(gprevdf))
-
-    cols = {
-    "Common Gainers": list(common_gg),
-    "Common Losers": list(common_ll),
-    "Gainers converted to Losers": list(common_gl),
-    "Losers converted to Gainers": list(common_lg)
-    }
-
-    max_len = max(len(v) for v in cols.values())
-
-    for k in cols:
-        cols[k].extend([np.nan] * (max_len - len(cols[k])))
-
-    new_df = pd.DataFrame(cols).fillna('')
-
-    new_df.to_csv("Data/comparison_result.csv", index=False)
+    if(gdata_df != gdata_prev_df & ldata_df != ldata_prev_df):
+        common_gg = set(gdf).intersection(set(gprevdf))
+        common_ll = set(ldf).intersection(set(lprevdf))
+        common_gl = set(gdf).intersection(set(lprevdf))
+        common_lg = set(ldf).intersection(set(gprevdf))
     
-    file_copy()
+        cols = {
+        "Common Gainers": list(common_gg),
+        "Common Losers": list(common_ll),
+        "Gainers converted to Losers": list(common_gl),
+        "Losers converted to Gainers": list(common_lg)
+        }
+    
+        max_len = max(len(v) for v in cols.values())
+    
+        for k in cols:
+            cols[k].extend([np.nan] * (max_len - len(cols[k])))
+    
+        new_df = pd.DataFrame(cols).fillna('')
+    
+        new_df.to_csv("Data/comparison_result.csv", index=False)
+        
+        file_copy()
 
 
