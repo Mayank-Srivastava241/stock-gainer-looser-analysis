@@ -32,7 +32,7 @@ def comparison():
     ldf = ldata_df['Symbol']
     gprevdf = gdata_prev_df['Symbol']
     lprevdf = ldata_prev_df['Symbol']
-    if(gdata_df != gdata_prev_df & ldata_df != ldata_prev_df):
+    if (gdata_df != gdata_prev_df) and (ldata_df != ldata_prev_df):
         common_gg = set(gdf).intersection(set(gprevdf))
         common_ll = set(ldf).intersection(set(lprevdf))
         common_gl = set(gdf).intersection(set(lprevdf))
