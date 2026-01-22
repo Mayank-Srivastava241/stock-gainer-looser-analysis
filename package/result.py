@@ -41,8 +41,8 @@ def comparison():
         cols = {
         "Common Gainers": list(common_gg),
         "Common Losers": list(common_ll),
-        "Gainers converted to Losers": list(common_gl),
-        "Losers converted to Gainers": list(common_lg)
+        "Losers converted to Gainers": list(common_gl),
+        "Gainers converted to Losers": list(common_lg)
         }
     
         max_len = max(len(v) for v in cols.values())
